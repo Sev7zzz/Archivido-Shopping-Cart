@@ -6,14 +6,16 @@ app = FastAPI()
 # Define a Pydantic model
 class Item(BaseModel):
     name: str
-    amount: int
+
 
 # Create a list to hold items
+
+itemsList = {"orange", "banana", "watermelon", "strawberry"}
 items = []
 
-@app.get("/items/")
+@app.get("/fruits/")
 def read_items():
-    return {"message": "orange"}
+    return {"Fruits": itemsList}
 
 # If you want to add an endpoint to add items
 @app.post("/items/")
