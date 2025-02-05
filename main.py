@@ -26,11 +26,16 @@ shopping_cart_items: List[Item] = []
 def get_cart_items():
     return shopping_cart_items
 
-@app.get("/fruits/", response_model=List[Item])
+@app.get("/items/", response_model=List[Item])
 def get_fruits():
     return items_list
 
-@app.post("/items/")
+@app.post("/additem/")
+def add_item(item: Item):
+    items_list.append(item)
+    return {"message": "Item added successfully", "item": item}
+
+@app.post("/order/")
 def add_item(item: Item):
     shopping_cart_items.append(item)
-    return {"message": "Item added successfully", "item": item}
+    return {"message": "Item added to cart successfully", "item": item}
