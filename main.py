@@ -1,39 +1,42 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from typing import List
 
 app = FastAPI()
 
-# Define a Pydantic model
 class Item(BaseModel):
     id: int
     name: str
     price: float
     quantity: int
 
-# Create a list to hold items
-itemsList = [
-    {"id": 1, "name": "Orange", "price": 25.0, "quantity": 5},
-    {"id": 2, "name": "Apple", "price": 30.0, "quantity": 10},
-    {"id": 3, "name": "Banana", "price": 15.0, "quantity": 20},
-    {"id": 4, "name": "Mango", "price": 50.0, "quantity": 8},
-    {"id": 5, "name": "Grapes", "price": 40.0, "quantity": 12},
+
+# List of available fruits
+items_list: List[Item] = [
+    Item(id=1, name="Orange", price=25.0, quantity=5),
+    Item(id=2, name="Apple", price=30.0, quantity=10),
+    Item(id=3, name="Banana", price=15.0, quantity=20),
+    Item(id=4, name="Mango", price=50.0, quantity=8),
+    Item(id=5, name="Grapes", price=40.0, quantity=12),
 ]
 
-#Holds the items
-ShoppingCartItems = []
+# Shopping cart storage
+shopping_cart_items: List[Item] = []
 
-# Endpoint to get the items from the cart
-@app.get("/cart/")
-def read_items():
- return {"Shopping Cart": ShoppingCartItems}
+@app.get("/cart/", response_model=List[Item])
+def get_cart_items():
+    return shopping_cart_items
 
-# Endpoint to the get items
-@app.get("/fruits/")
-def read_items():
-    return {"Fruits": itemsList}
+@app.get("/fruits/", response_model=List[Item])
+def get_fruits():
+    return items_list
 
-# Endpoint to add items
 @app.post("/items/")
 def add_item(item: Item):
-    ShoppingCartItems.append(item)  # Convert Pydantic model to dict
+    # Check if item already exists in the cart
+    for existing_item in shopping_cart_items:
+        if existing_item.id == item.id:
+            raise HTTPException(status_code=400, detail="Item already in cart")
+    
+    shopping_cart_items.append(item)
     return {"message": "Item added successfully", "item": item}
