@@ -10,7 +10,6 @@ class Item(BaseModel):
     price: float
     quantity: int
 
-
 # List of available fruits
 items_list: List[Item] = [
     Item(id=1, name="Orange", price=25.0, quantity=5),
@@ -33,10 +32,5 @@ def get_fruits():
 
 @app.post("/items/")
 def add_item(item: Item):
-    # Check if item already exists in the cart
-    for existing_item in shopping_cart_items:
-        if existing_item.id == item.id:
-            raise HTTPException(status_code=400, detail="Item already in cart")
-    
     shopping_cart_items.append(item)
     return {"message": "Item added successfully", "item": item}
